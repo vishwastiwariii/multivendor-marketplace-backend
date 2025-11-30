@@ -1,5 +1,6 @@
 const {Router} = require("express")
-const vendorRouter = express()
+const vendorRouter = Router()
+
 
 
 vendorRouter.post('/signup',async function(req,res) {
