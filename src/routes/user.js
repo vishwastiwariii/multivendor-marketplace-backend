@@ -36,7 +36,6 @@ userRouter.post('/signup',async function(req,res) {
 })
 
 
-
 userRouter.post('/signin', async function(req,res) {
     const {email,password} = req.body
 
@@ -68,13 +67,15 @@ userRouter.post('/signin', async function(req,res) {
 })
 
 
-
 userRouter.get('/allproducts' , async function(req,res){
 
 })
 
+
 userRouter.get('/cart' , async function(req,res){
-    
+    res.json({
+        message: "The products added in the cart are : "
+    })
 })
 
 userRouter.get('/orders' , async function(req,res){
