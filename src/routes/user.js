@@ -22,7 +22,7 @@ userRouter.post('/signup',async function(req,res) {
           role:role
         })
     } catch(e){
-        res.json({
+        res.status(403).json({
             message: "User already exists"
         })
         errorThrown = true
@@ -38,14 +38,14 @@ userRouter.post('/signup',async function(req,res) {
 
 
 userRouter.post('/signin', async function(req,res) {
-    const {username,email,password} = req.body
+    const {email,password} = req.body
 
     const user = await UserModel.findOne({
         email: email, 
     })
 
     if(!user){
-        res.json({
+        res.status(403).json({
             message: "Invalid Credentials"
         })
     }
