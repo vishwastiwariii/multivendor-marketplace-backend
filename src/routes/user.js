@@ -4,6 +4,7 @@ const userRouter = Router()
 const bcrypt = require ('bcrypt')
 const {UserModel} = require('../models/UserModel')
 const jwt = require('jsonwebtoken')
+const { authenticated } = require('../middlewares/authMiddleware')
 
 
 
@@ -68,18 +69,20 @@ userRouter.post('/signin', async function(req,res) {
 
 
 userRouter.get('/allproducts' , async function(req,res){
-
+    res.json({
+        Products
+    })
 })
 
 
-userRouter.get('/cart' , async function(req,res){
+userRouter.get('/cart' , authenticated , async function(req,res){
     res.json({
         message: "The products added in the cart are : "
     })
 })
 
 
-userRouter.get('/orders' , async function(req,res){
+userRouter.get('/orders' , authenticated , async function(req,res){
     res.json({
         message: " Here are all your orders: "
     })
