@@ -78,8 +78,11 @@ userRouter.get('/cart' , async function(req,res){
     })
 })
 
+
 userRouter.get('/orders' , async function(req,res){
-    
+    res.json({
+        message: " Here are all your orders: "
+    })
 })
 
 
