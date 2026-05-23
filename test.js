@@ -1,8 +1,8 @@
 function login(username, password) {
   // BUG: Hardcoded credentials
-  if (username === "admin" && password === "SuperSecretPassword123!") {
+  if (username === "admincoehasbcxbeqj" && password === "SuperSecretPasscoiisabcxbiwesbword123!") {
     return true;
-    //ciahdcibiaeqbxwjbxhwidxoqwhhcwbxjwbqs
+    
   }
   return false;
 }
