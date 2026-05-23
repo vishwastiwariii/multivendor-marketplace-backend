@@ -8,6 +8,7 @@ function authenticated (req,res,next) {
 
     if(decodedInfo) {
         req.userId = decodedInfo._id
+        req.user.role = decodedInfo.role
         next()
     } else {
         res.json({

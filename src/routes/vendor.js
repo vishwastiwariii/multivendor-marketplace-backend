@@ -3,7 +3,8 @@ const vendorRouter = Router()
 const {UserModel} = require('../models/UserModel')
 const bcrypt = require ('bcrypt')
 const jwt = require('jsonwebtoken')
-const { authorizedRoles , authMiddleware } = require("../middlewares/roleMiddleware")
+const { authorizedRoles } = require("../middlewares/roleMiddleware")
+const { authenticated } = require("../middlewares/authMiddleware")
 
 vendorRouter.post('/signin', async function(req,res) {
     const {email,password , role} = req.body
@@ -36,7 +37,7 @@ vendorRouter.post('/signin', async function(req,res) {
         }
 })
 
-vendorRouter.post('/add-products' , authMiddleware ,  authorizedRoles("vendor") , async function (req,res){
+vendorRouter.post('/add-products', authorizedRoles("vendor") , authenticated , async function (req,res){
    const {name,price} = req.body 
 
    await ProductsModel.create({
@@ -48,7 +49,6 @@ vendorRouter.post('/add-products' , authMiddleware ,  authorizedRoles("vendor") 
       message: "Products added succesfully"
    })
 })
-
 
 
 module.exports = {

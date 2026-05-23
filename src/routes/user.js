@@ -54,7 +54,7 @@ userRouter.post('/signin', async function(req,res) {
 
     if(matched){
         const token = jwt.sign({
-            id: user._id.toString()
+            id: user._id.toString(),
         } , process.env.JWT_SECRET_USER)
 
         res.json({
@@ -70,7 +70,7 @@ userRouter.post('/signin', async function(req,res) {
 
 userRouter.get('/allproducts' , async function(req,res){
     res.json({
-        Products
+        message: "Here are all available products"
     })
 })
 
