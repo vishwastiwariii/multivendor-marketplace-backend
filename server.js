@@ -6,7 +6,11 @@ const PORT = 3000;
 const users = [
   { id: 1, name: 'Alice', role: 'admin' },
   { id: 2, name: 'Bob', role: 'user' },
-  { id: 3, name: 'Charlie', role: 'user' }
+  { id: 3, name: 'Charlie', role: 'user' },
+  { id: 4, name: 'Charlie', role: 'user' },
+  { id: 5, name: 'Charlie', role: 'user' },
+  { id: 6, name: 'Charlie', role: 'user' },
+  { id: 7, name: 'Charlie', role: 'user' }
 ];
 
 // Middleware
