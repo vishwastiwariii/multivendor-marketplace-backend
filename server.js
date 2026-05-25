@@ -1,72 +1,72 @@
 const express = require('express');
-const app = express();
-const PORT = 3000;
+const router = express.Router();
 
-// Mock database
-const users = [
-  { id: 1, name: 'Alice', role: 'admin' },
-  { id: 2, name: 'Bob', role: 'user' },
-  { id: 3, name: 'Charlie', role: 'user' },
-  { id: 4, name: 'Charlie', role: 'user' },
-  { id: 5, name: 'Charlie', role: 'user' },
-  { id: 6, name: 'Charlie', role: 'user' },
-  { id: 7, name: 'Charlie', role: 'user' }
+// Mock Database
+let inventory = [
+  { id: "prod-101", name: "Wireless Mouse", qty: 15, price: 29.99 },
+  { id: "prod-102", name: "Mechanical Keyboard", qty: 5, price: 89.99 }
 ];
 
-// Middleware
-app.use(express.json());
-
-// 1. GET all users
-app.get('/api/users', (req, res) => {
-  res.status(200).json(users);
+// 1. Buggy Async Route: Fetching product details from a "remote API"
+router.get('/external-sync/:id', async (req, res, next) => {
+  // Simulating a database/API fetch that might fail
+  const productData = await fakeExternalApiFetch(req.params.id); 
+  res.json({ success: true, data: productData });
 });
 
-// 2. GET a single user by ID
-app.get('/api/users/:id', (req, res) => {
-  const userId = req.params.id;
-  const user = users.find(u => u.id === userId);
+// 2. Logic & Type Bug: Update inventory stock quantity
+router.patch('/stock/:id', (req, res) => {
+  const { amount } = req.body; // Expecting a number like 5 or -2
+  const product = inventory.find(p => p.id === req.params.id);
 
-  if (!user) {
-    res.status(404).json({ error: 'User not found' });
+  if (!product) {
+    return res.status(404).json({ error: "Product not found" });
   }
 
-  res.json(user);
+  // Adjust stock
+  product.qty += amount; 
+  res.json({ message: "Stock updated successfully", currentStock: product.qty });
 });
 
-// 3. POST create a new user
-app.post('/api/users', (req, res) => {
-  const { name, role } = req.body;
+// 3. Security/Logic Bug: Delete a product (Admin only)
+router.delete('/product/:id', (req, res) => {
+  const userRole = req.headers['role'];
 
-  if (!name || !role) {
-    res.status(400).json({ error: 'Name and role are required' });
+  // Security check
+  if (userRole !== 'admin') {
+    res.status(403).json({ error: "Unauthorized" });
   }
 
-  const newUser = {
-    id: users.length + 1,
-    name,
-    role
-  };
-
-  users.push(newUser);
-  res.status(201).json(newUser);
+  // Delete logic
+  inventory = inventory.filter(p => p.id !== req.params.id);
+  res.status(200).json({ message: "Product deleted", remaining: inventory.length });
 });
 
-// 4. GET a protected admin route
-app.get('/api/admin', checkAdmin, (req, res) => {
-  res.json({ message: 'Welcome to the secret admin dashboard!' });
-});
-
-// Admin authorization middleware
-function checkAdmin(req, res, next) {
-  const userRole = req.headers['x-user-role'];
-
-  if (userRole === 'admin') {
-    next();
-  } else {
-    res.status(403).json({ error: 'Access denied. Admins only.' });
+// 4. Memory Leak / Scope Bug: Search inventory and log history
+const searchHistory = [];
+router.get('/search', (req, res) => {
+  const { q } = req.query;
+  
+  if (!q) {
+    return res.status(400).json({ error: "Query parameter 'q' is required" });
   }
+
+  // Intentional tracking of searches, but introduces an unbounded array growth/leak
+  searchHistory.push({ query: q, timestamp: Date.now(), ip: req.ip });
+
+  const results = inventory.filter(p => p.name.toLowerCase().includes(q.toLowerCase()));
+  res.json(results);
+});
+
+// Mock external API helper function
+function fakeExternalApiFetch(id) {
+  return new Promise((resolve, reject) => {
+    if (id === "fail") {
+      reject(new Error("External API Connection Timeout"));
+    } else {
+      resolve({ id, status: "verified", warehouse: "East-Coast" });
+    }
+  });
 }
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+module.exports = router;
